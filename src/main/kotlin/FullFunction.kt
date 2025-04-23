@@ -16,7 +16,7 @@ class FullFunction(
 
     private fun logPart(x: Double): Double {
         return (((((log.ln(x) - log.ln(x)) * log.log2(x)).pow(2)) /
-                (log.log10(x) * log.log3(x))).pow(3))
+                (log.log10(x) * log.log3(x))).pow(3)).takeIf { !it.isNaN() } ?: 0.0
     }
 
     fun calculate(x: Double): Double {

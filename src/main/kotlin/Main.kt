@@ -2,23 +2,26 @@ package org.example
 
 import kotlin.math.*
 
-fun main() {
-    val points: List<Double> = CsvExporter.import("src/test/resources/expected_results.csv").keys.toList()
+fun main(args: Array<String>) {
+    require(args.size == 3) { "Usage: <start> <end> <step>" }
+    val start = args[0].toDoubleOrNull() ?: error("Invalid start value")
+    val end = args[1].toDoubleOrNull() ?: error("Invalid end value")
+    val step = args[2].toDoubleOrNull() ?: error("Invalid step value")
 
-    println(points)
+    require(step > 0) { "Step must be positive" }
+    val xSequence = generateSequence(start) { it + step }.takeWhile { it <= end }.toList()
+    val functions = Functions()
+    val fullFunction = FullFunction(functions, functions)
 
-    val pointsBeforeZero = points.filter { it <= 0 }
-    CsvExporter.exportByList(pointsBeforeZero, "src/test/resources/output/sin.csv") { x -> sin(x) }
-    CsvExporter.exportByList(pointsBeforeZero, "src/test/resources/output/cos.csv") { x -> cos(x) }
-    CsvExporter.exportByList(pointsBeforeZero, "src/test/resources/output/tan.csv") { x -> tan(x) }
-    CsvExporter.exportByList(pointsBeforeZero, "src/test/resources/output/cot.csv") { x -> 1 / tan(x) }
-    CsvExporter.exportByList(pointsBeforeZero, "src/test/resources/output/sec.csv") { x -> 1 / cos(x) }
-    CsvExporter.exportByList(pointsBeforeZero, "src/test/resources/output/csc.csv") { x -> 1 / sin(x) }
 
-    val pointsAfterZero = points.filter { it > 0 }
-    CsvExporter.exportByList(pointsAfterZero, "src/test/resources/output/ln.csv") { x -> ln(x) }
-    CsvExporter.exportByList(pointsAfterZero, "src/test/resources/output/log2.csv") { x -> ln(x) / ln(2.0) }
-    CsvExporter.exportByList(pointsAfterZero, "src/test/resources/output/log3.csv") { x -> ln(x) / ln(3.0) }
-    CsvExporter.exportByList(pointsAfterZero, "src/test/resources/output/log10.csv") { x -> log10(x) }
+    val filename = "src/test/resources/graph.csv"
+    CsvExporter.exportByList(xSequence, filename) { x ->
+        try {
+            fullFunction.calculate(x)
+        } catch (e: Exception) {
+            Double.NaN
+        }
+    }
+    println("✅ Exported to $filename")
 
 }

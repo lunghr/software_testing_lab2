@@ -1,6 +1,7 @@
 plugins {
     kotlin("jvm") version "2.0.21"
     kotlin("plugin.spring") version "1.9.25"
+    application
 }
 
 kotlin {
@@ -27,4 +28,8 @@ tasks.test {
         "-XX:+EnableDynamicAgentLoading",
         "-Xshare:off"
     )
+}
+
+application {
+    mainClass.set("org.example.MainKt")
 }
